@@ -154,16 +154,15 @@ function showCategory($connection){
     <?php endforeach;
 }
 
-
-
+if (isset($_POST["add"]))
+{addFlight($conn);}
 
 
 function addFlight($connection){
-    if (isset($_POST["insert"]))
-    {
+
         $skaiciu_sablonas = '/[0-9.,]{1,10}/';
         $raidziu_sablonas = '/[A-Za-z .,]{5,100}/';
-        $id = $_GET['id'];
+        $id = $_POST['id'];
         $vardas = $_POST['name'];
         $description = $_POST['description'];
         $from = $_POST['from'];
@@ -174,7 +173,7 @@ function addFlight($connection){
         if (preg_match($raidziu_sablonas, $vardas) && preg_match($raidziu_sablonas, $description) && preg_match($raidziu_sablonas, $from) &&
             preg_match($raidziu_sablonas, $to) && preg_match($skaiciu_sablonas, $price) && preg_match($skaiciu_sablonas, $category))
         {
-            $flightInfo = "INSERT INTO flight(name, description, flight_from, fligh_to, price, flight_category) 
+            $flightInfo = "INSERT INTO flight(name, description, flight_from, flight_to, price, flight_category) 
                           VALUES(:name, :description , :from , :to , :price, :category)";
             $flightInfoPrep = $connection->prepare($flightInfo);
             $flightInfoPrep->bindParam(':name', $vardas, PDO::PARAM_STR);
@@ -183,19 +182,13 @@ function addFlight($connection){
             $flightInfoPrep->bindParam(':to', $to, PDO::PARAM_STR);
             $flightInfoPrep->bindParam(':price', $price, PDO::PARAM_STR);
             $flightInfoPrep->bindParam(':category', $category, PDO::PARAM_STR);
+            $flightInfoPrep->execute();
 
-            if ($conn->query($flightInfo) === TRUE)
-            {
-                echo "New record created successfuly";
-            }
-            else
-            {
-                echo "Error: " . $flightInfo . "<br />" . $conn->error;
-            }
+           
         }
         else
         {
             echo "Blogai ivesti duomenys";
         }
-    }
+
 }
