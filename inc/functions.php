@@ -120,3 +120,82 @@ function generateFlightInfo($connection) {
         <?php 
     }
 }
+
+
+function showTable($connection){
+    $flight = $connection->query("SELECT * FROM flight");
+    $flArray = $flight -> fetchAll(PDO::FETCH_ASSOC);
+    foreach ($flArray as $flight):?>
+        <tr>
+
+            <td><?=$flight['id'];?></td>
+            <td><?=$flight['name'];?></td>
+            <td><?=$flight['description'];?></td>
+            <td><?=$flight['flight_from'];?></td>
+            <td><?=$flight['flight_to'];?></td>
+            <td><?=$flight['price'];?></td>
+            <td><?=$flight['flight_category'];?></td>
+
+        </tr>
+    <?php endforeach;
+}
+
+
+function showCategory($connection){
+    $category = $connection->query("SELECT * FROM category");
+    $catArray = $category -> fetchAll(PDO::FETCH_ASSOC);
+    foreach ($catArray as $category):?>
+        <tr>
+
+            <td><?=$category['id'];?></td>
+            <td><?=$category['name'];?></td>
+
+        </tr>
+    <?php endforeach;
+}
+
+
+
+
+
+function addFlight($connection){
+    if (isset($_POST["insert"]))
+    {
+        $skaiciu_sablonas = '/[0-9.,]{1,10}/';
+        $raidziu_sablonas = '/[A-Za-z .,]{5,100}/';
+        $id = $_GET['id'];
+        $vardas = $_POST['name'];
+        $description = $_POST['description'];
+        $from = $_POST['from'];
+        $to = $_POST['to'];
+        $price = $_POST['price'];
+        $category = $_POST['category'];
+
+        if (preg_match($raidziu_sablonas, $vardas) && preg_match($raidziu_sablonas, $description) && preg_match($raidziu_sablonas, $from) &&
+            preg_match($raidziu_sablonas, $to) && preg_match($skaiciu_sablonas, $price) && preg_match($skaiciu_sablonas, $category))
+        {
+            $flightInfo = "INSERT INTO flight(name, description, flight_from, fligh_to, price, flight_category) 
+                          VALUES(:name, :description , :from , :to , :price, :category)";
+            $flightInfoPrep = $connection->prepare($flightInfo);
+            $flightInfoPrep->bindParam(':name', $vardas, PDO::PARAM_STR);
+            $flightInfoPrep->bindParam(':description', $description, PDO::PARAM_STR);
+            $flightInfoPrep->bindParam(':from', $from, PDO::PARAM_STR);
+            $flightInfoPrep->bindParam(':to', $to, PDO::PARAM_STR);
+            $flightInfoPrep->bindParam(':price', $price, PDO::PARAM_STR);
+            $flightInfoPrep->bindParam(':category', $category, PDO::PARAM_STR);
+
+            if ($conn->query($flightInfo) === TRUE)
+            {
+                echo "New record created successfuly";
+            }
+            else
+            {
+                echo "Error: " . $flightInfo . "<br />" . $conn->error;
+            }
+        }
+        else
+        {
+            echo "Blogai ivesti duomenys";
+        }
+    }
+}

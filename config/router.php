@@ -15,6 +15,10 @@ if ($routerEngine) {
 		case "details":
 			include "themes/$theme/pages/flight_detail.php";
 			break;
+        case "login":
+            include "themes/$theme/pages/kurejas_page.php";
+            include "themes/$theme/pages/kurejas_forma.php";
+            break;
 		default:
 			include "themes/$theme/pages/404.php";
 	}
